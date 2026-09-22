@@ -4,7 +4,7 @@
 
 PhyState is a verification layer for lenders and insurers who rely on AI agents to make decisions about physical assets they can't see. It checks whether what the agent believes is happening on the ground is actually true, using independent satellite evidence, before money moves.
 
-**Live site:** https://bmaina.github.io/phystate *(update once deployed)*
+**Live site:** https://bmaina.github.io/phystate
 
 ## What this repo is
 
