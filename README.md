@@ -2,7 +2,7 @@
 
 **Physical Reality Assurance**- verifying what AI agents believe about the physical world.
 
-PhyState is a verification layer for lenders and insurers who rely on AI agents to make decisions about physical assets they can't see. It checks whether what the agent believes is happening on the ground is actually true — using independent satellite evidence, before money moves.
+PhyState is a verification layer for lenders and insurers who rely on AI agents to make decisions about physical assets they can't see. It checks whether what the agent believes is happening on the ground is actually true, using independent satellite evidence, before money moves.
 
 **Live site:** https://bmaina.github.io/phystate *(update once deployed)*
 
