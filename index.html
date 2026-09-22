@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhyState — Physical Reality Assurance</title>
+<meta name="description" content="PhyState verifies what AI agents believe about the physical world with independent satellite evidence, before money moves.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c121c;
+    --panel:#121b28;
+    --panel-2:#0f1520;
+    --line:rgba(237,239,242,0.09);
+    --text:#edeff2;
+    --muted:#8c97a8;
+    --accent:#d98e3b;
+    --supported:#5aa876;
+    --conflicted:#c1694a;
+    --underdetermined:#6b7686;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    line-height:1.15;
+    margin:0 0 0.5em;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:var(--accent); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  section{padding:88px 0; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--accent);
+    letter-spacing:0.02em;
+    margin-bottom:14px;
+  }
+  p{color:var(--muted); max-width:64ch;}
+  p.lede{color:var(--text); font-size:1.15rem; max-width:60ch;}
+
+  /* HERO */
+  header.hero{
+    padding:120px 0 96px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero .wrap{position:relative; z-index:2;}
+  .wordmark{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:1.05rem; letter-spacing:0.02em; color:var(--text); margin-bottom:48px;}
+  .wordmark span{color:var(--accent);}
+  header.hero h1{font-size:clamp(2.2rem, 5vw, 3.4rem); max-width:15ch;}
+  header.hero .sub{font-size:1.2rem; color:var(--muted); max-width:56ch; margin-top:18px;}
+  .cta-row{margin-top:36px; display:flex; gap:16px; flex-wrap:wrap;}
+  .btn{
+    display:inline-block;
+    padding:12px 22px;
+    border-radius:3px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.9rem;
+  }
+  .btn-primary{background:var(--accent); color:#0c121c; font-weight:500;}
+  .btn-primary:hover{background:#e6a256; text-decoration:none;}
+  .btn-ghost{border:1px solid var(--line); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--accent); text-decoration:none;}
+
+  /* CHAIN visual */
+  .chain{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+    margin-top:64px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .chain-step{
+    flex:1 1 200px;
+    padding:22px 20px;
+    border-right:1px solid var(--line);
+    background:var(--panel);
+  }
+  .chain-step:last-child{border-right:none;}
+  .chain-step .num{font-family:'IBM Plex Mono', monospace; color:var(--accent); font-size:0.8rem;}
+  .chain-step h3{font-size:1.02rem; margin:6px 0 6px;}
+  .chain-step p{font-size:0.88rem; margin:0; max-width:none;}
+
+  /* STAT GRID */
+  .stat-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; margin-top:40px;}
+  .stat{border-left:2px solid var(--accent); padding-left:16px;}
+  .stat .num{font-family:'Space Grotesk', sans-serif; font-size:2rem; font-weight:600; color:var(--text);}
+  .stat .label{color:var(--muted); font-size:0.9rem; margin-top:4px;}
+
+  /* VALIDATION TABLE */
+  table{width:100%; border-collapse:collapse; margin-top:32px; font-size:0.92rem;}
+  th,td{text-align:left; padding:14px 16px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted); font-weight:500;}
+  td{color:var(--text);}
+  td.tier{color:var(--muted); font-size:0.86rem;}
+  .not-claiming{
+    margin-top:28px;
+    border:1px dashed var(--line);
+    border-radius:4px;
+    padding:20px 24px;
+  }
+  .not-claiming h3{font-size:0.95rem; color:var(--conflicted); margin-bottom:10px;}
+  .not-claiming ul{margin:0; padding-left:20px; color:var(--muted);}
+  .not-claiming li{margin-bottom:6px;}
+
+  /* BUSINESS MODEL */
+  .phases{display:flex; flex-direction:column; gap:0; margin-top:36px;}
+  .phase{
+    display:flex;
+    gap:24px;
+    padding:22px 0;
+    border-top:1px solid var(--line);
+  }
+  .phase:last-child{border-bottom:1px solid var(--line);}
+  .phase .num{font-family:'IBM Plex Mono', monospace; color:var(--accent); flex:0 0 36px;}
+  .phase h3{font-size:1.05rem; margin-bottom:4px;}
+  .phase p{margin:0;}
+  .pricing-note{
+    margin-top:24px;
+    padding:16px 20px;
+    background:var(--panel);
+    border-radius:4px;
+    border:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.88rem;
+    color:var(--muted);
+  }
+  .pricing-note strong{color:var(--text);}
+
+  /* COMPETITION */
+  .comp-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:36px;}
+  .comp-card{border:1px solid var(--line); border-radius:4px; padding:24px;}
+  .comp-card .tag{font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--accent); margin-bottom:10px; display:block;}
+  .comp-card h3{font-size:1.1rem;}
+  .comp-card p{font-size:0.9rem; margin-top:10px;}
+
+  /* TEAM */
+  .team-card{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+    margin-top:36px;
+    flex-wrap:wrap;
+  }
+  .avatar{
+    width:64px; height:64px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk', sans-serif; font-weight:700; color:var(--accent);
+    flex:0 0 64px;
+  }
+  .team-meta h3{font-size:1.15rem; margin-bottom:2px;}
+  .team-meta .role{color:var(--muted); font-size:0.9rem; margin-bottom:14px;}
+  .cred-list{list-style:none; padding:0; margin:0 0 18px; color:var(--muted); font-size:0.92rem;}
+  .cred-list li{padding:5px 0; border-bottom:1px solid var(--line);}
+  .gap-note{
+    border-left:2px solid var(--conflicted);
+    padding-left:16px;
+    font-size:0.92rem;
+    color:var(--muted);
+  }
+  .gap-note strong{color:var(--text);}
+  blockquote{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.1rem;
+    font-style:normal;
+    color:var(--text);
+    border-left:2px solid var(--accent);
+    padding-left:20px;
+    margin:28px 0 0;
+    max-width:56ch;
+  }
+
+  /* ASK / FOOTER */
+  .ask-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:36px;}
+  .ask-card{border:1px solid var(--line); border-radius:4px; padding:24px;}
+  .ask-card h3{font-size:1.05rem;}
+  .ask-card p{font-size:0.92rem;}
+  footer{padding:56px 0 80px; text-align:left;}
+  footer .wordmark{margin-bottom:18px;}
+  .contact-line{font-family:'IBM Plex Mono', monospace; color:var(--muted); font-size:0.9rem;}
+  .contact-line a{color:var(--text);}
+
+  @media (max-width: 720px){
+    .stat-grid{grid-template-columns:1fr;}
+    .comp-grid{grid-template-columns:1fr;}
+    .ask-grid{grid-template-columns:1fr;}
+    .chain-step{border-right:none; border-bottom:1px solid var(--line);}
+    section{padding:64px 0;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="wordmark">PHY<span>STATE</span></div>
+    <h1>Verifying what AI agents believe about the physical world.</h1>
+    <p class="sub">Lenders and insurers increasingly rely on AI agents to decide on physical assets they can't see. PhyState checks the agent's claim against independent satellite evidence — before the money moves.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:maina.anu@gmail.com">Talk to us</a>
+      <a class="btn btn-ghost" href="#product">See how it works</a>
+    </div>
+
+    <div class="chain">
+      <div class="chain-step">
+        <div class="num mono">01</div>
+        <h3>Claim</h3>
+        <p>Agent or operator asserts a physical-world state — planting date, plot condition.</p>
+      </div>
+      <div class="chain-step">
+        <div class="num mono">02</div>
+        <h3>Evidence</h3>
+        <p>Independent satellite data pulled for the claimed location and time window.</p>
+      </div>
+      <div class="chain-step">
+        <div class="num mono">03</div>
+        <h3>Assurance</h3>
+        <p>Claim checked against evidence — Supported / Conflicted / Underdetermined.</p>
+      </div>
+      <div class="chain-step">
+        <div class="num mono">04</div>
+        <h3>Action</h3>
+        <p>Evidence-backed recommendation: Clear / Request Evidence / Inspect / Escalate.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="vision">
+  <div class="wrap">
+    <div class="eyebrow">01 — VISION</div>
+    <h2>AI agents should never act on an unverified physical claim.</h2>
+    <p class="lede">As AI agents take on decisions that used to require a person to look — releasing a credit tranche, paying a claim, approving a disbursement — the physical world becomes the one input they cannot independently confirm.</p>
+    <p>PhyState exists to close that gap: an independent layer that checks whether what an agent believes about a physical asset is actually true, before the decision is made.</p>
+  </div>
+</section>
+
+<section id="why-now">
+  <div class="wrap">
+    <div class="eyebrow">02 — OPPORTUNITY</div>
+    <h2>Why now</h2>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="num">8% → 34%</div>
+        <div class="label">Full AI adoption among insurers, single-year jump</div>
+      </div>
+      <div class="stat">
+        <div class="num">40%</div>
+        <div class="label">of enterprise applications expected to include task-specific AI agents by end of 2026 (Gartner)</div>
+      </div>
+      <div class="stat">
+        <div class="num">17%</div>
+        <div class="label">of organizations have actually deployed an agent so far — intent is running ahead of delivery</div>
+      </div>
+    </div>
+    <p style="margin-top:32px;">Autonomy is outpacing verification, and that gap is already visible in an adjacent vertical. Empiric Earth (formed 2026 from the Nexar–Nauto merger) has built an independent evidence layer for road-based physical-world claims, backed by 10+ years of operating history and named enterprise customers across automotive, insurance and AV. The same gap — automated decisions outrunning independent verification — exists for distributed outdoor assets that cameras can't reach and satellites can.</p>
+  </div>
+</section>
+
+<section id="product">
+  <div class="wrap">
+    <div class="eyebrow">03 — PRODUCT</div>
+    <h2>Claim → Evidence → Assurance → Action</h2>
+    <p class="lede">Sensing method is satellite-based (Sentinel-1/2), fitting decisions made on a days-to-weeks cadence — not real-time.</p>
+    <p>First worked example: agricultural outgrower credit and advance-payment release, checked against satellite-derived phenology.</p>
+  </div>
+</section>
+
+<section id="validation">
+  <div class="wrap">
+    <div class="eyebrow">04 — VALIDATION STATUS</div>
+    <h2>What we've done, and what's still ahead</h2>
+    <table>
+      <thead>
+        <tr><th>What we've done</th><th>Evidence tier</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Synthetic NDVI phenology divergence test across 5 failure modes, all cleanly separated (AUC ~1.0)</td>
+          <td class="tier">Internal, synthetic — proves the method's logic is sound, not that it works on real fields</td>
+        </tr>
+        <tr>
+          <td>Real Sentinel-2 NDVI time series pulled against a known outcome set</td>
+          <td class="tier">Internal, real data — first genuine validation step</td>
+        </tr>
+        <tr>
+          <td>AltaLab Fall 2026 cohort acceptance</td>
+          <td class="tier">External — third-party selection, not a customer or pilot</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="not-claiming">
+      <h3>What we are not claiming yet</h3>
+      <ul>
+        <li>No customer, LOI, or design partner</li>
+        <li>No validation on real fields with agronomic variability, mixed-pixel contamination, or harder failure modes (e.g. partial replanting)</li>
+        <li>No domain co-founder or advisor in lending/insurance risk yet</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="business-model">
+  <div class="wrap">
+    <div class="eyebrow">05 — BUSINESS MODEL</div>
+    <h2>Phased path to infrastructure</h2>
+    <div class="phases">
+      <div class="phase">
+        <div class="num mono">01</div>
+        <div><h3>Verification API</h3><p>Usage-based access — pay per verification event.</p></div>
+      </div>
+      <div class="phase">
+        <div class="num mono">02</div>
+        <div><h3>Enterprise Assurance Platform</h3><p>Contracts for larger institutional portfolios.</p></div>
+      </div>
+      <div class="phase">
+        <div class="num mono">03</div>
+        <div><h3>Agent Assurance Infrastructure</h3><p>Embedded evidence layer inside agent decision pipelines.</p></div>
+      </div>
+    </div>
+    <div class="pricing-note"><strong>Pricing hypothesis:</strong> $0.10–$1+ per verification event, plus enterprise contracts for larger portfolios. Not yet tested with a customer — stated as a hypothesis in application materials.</div>
+  </div>
+</section>
+
+<section id="market">
+  <div class="wrap">
+    <div class="eyebrow">06 — MARKET</div>
+    <h2>A category still forming</h2>
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="stat">
+        <div class="num">$1.79B → $6.54B</div>
+        <div class="label">Global AI agents in financial services market, 2025→2035 (13.84% CAGR)</div>
+      </div>
+      <div class="stat">
+        <div class="num">34%</div>
+        <div class="label">Full AI adoption among insurers in 2026, up from 8% a year earlier</div>
+      </div>
+    </div>
+    <p style="margin-top:28px;"><strong style="color:var(--text);">Stated honestly:</strong> these figures describe AI agent adoption in finance and insurance broadly. None of them measure demand for third-party physical-world verification specifically — that category doesn't yet have its own market data. A bottoms-up addressable-market sizing for PhyState's specific niche is next-step validation work, not yet computed.</p>
+  </div>
+</section>
+
+<section id="competition">
+  <div class="wrap">
+    <div class="eyebrow">07 — COMPETITION</div>
+    <h2>An assurance layer, not a data vendor</h2>
+    <div class="comp-grid">
+      <div class="comp-card">
+        <span class="tag">DIRECT COMPARABLE</span>
+        <h3>Mireye</h3>
+        <p>Data access — provides satellite/geospatial data for buyers to interpret themselves.</p>
+        <p><strong style="color:var(--text);">How PhyState differs:</strong> we provide the interpreted assurance verdict (Supported / Conflicted / Underdetermined), not raw data access.</p>
+      </div>
+      <div class="comp-card">
+        <span class="tag">ADJACENT VALIDATION</span>
+        <h3>Empiric Earth</h3>
+        <p>Independent evidence layer for road-based, real-time physical-world claims (Nexar + Nauto, 10+ yrs operating history).</p>
+        <p><strong style="color:var(--text);">How PhyState differs:</strong> we're the equivalent for distributed outdoor assets on a days-to-weeks decision cadence — a gap camera-fleet coverage structurally can't reach.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gtm">
+  <div class="wrap">
+    <div class="eyebrow">08 — GO TO MARKET</div>
+    <h2>Earn the first real conversation</h2>
+    <p class="lede">Targeting the population most likely to actually respond — lenders and insurers already living the agent-verification problem — not a broad cold-outreach list.</p>
+    <p><strong style="color:var(--text);">Targeted outreach:</strong> direct outreach to lenders and insurers already piloting agent-assisted decisioning.</p>
+    <p><strong style="color:var(--text);">Co-founder / advisor search:</strong> running in parallel, for a domain co-founder or advisor with lending, insurance, or credit-risk experience to close the buyer-side gap in the team.</p>
+  </div>
+</section>
+
+<section id="team">
+  <div class="wrap">
+    <div class="eyebrow">09 — TEAM</div>
+    <h2>Why this founder</h2>
+    <div class="team-card">
+      <div class="avatar">BG</div>
+      <div class="team-meta">
+        <h3>Benson Gachaga</h3>
+        <div class="role">Founder &amp; CEO</div>
+        <ul class="cred-list">
+          <li>15+ years in geospatial intelligence and satellite data processing across East Africa and internationally</li>
+          <li>MS, Geoinformation and Earth Observation — University of Twente, Netherlands</li>
+          <li>MBA — Gies College of Business, University of Illinois Urbana-Champaign, USA</li>
+          <li>PMP certified</li>
+          <li>Built and validated the core detection method: synthetic NDVI test across 5 failure modes (AUC ~1.0), followed by a real Sentinel-2 data validation pass</li>
+        </ul>
+        <div class="gap-note"><strong>Team gap, disclosed:</strong> solo founder. No domain co-founder or advisor in lending, insurance, or credit risk yet — actively searching. Institutional experience with UN missions and international development NGOs is bureaucratic engagement, not a claimed moat.</div>
+        <blockquote>"I've spent 15+ years turning imperfect physical-world evidence into decisions. PhyState applies that discipline to insurance and lending."</blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ask">
+  <div class="wrap">
+    <div class="eyebrow">10 — THE ASK</div>
+    <h2>What I'm currently looking for</h2>
+    <div class="ask-grid">
+      <div class="ask-card">
+        <h3>Domain co-founder or advisor</h3>
+        <p>Lending, insurance, or credit-risk experience — the buyer-side expertise the team doesn't yet have.</p>
+      </div>
+      <div class="ask-card">
+        <h3>Pilot introductions</h3>
+        <p>Lenders or insurers running agent-assisted decisioning who would test the evidence layer against a real claim.</p>
+      </div>
+    </div>
+    <p style="margin-top:28px;">This is a validation ask, not a funding ask — no round has been sized. If that changes, this page will name an exact amount and the milestone it achieves.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="wordmark">PHY<span>STATE</span></div>
+    <p class="contact-line">Looking for our first insurance and ag-lending design partners. If this problem sounds familiar — including if all you have is a skeptical question — get in touch: <a href="mailto:maina.anu@gmail.com">maina.anu@gmail.com</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
